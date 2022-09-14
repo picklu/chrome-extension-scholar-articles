@@ -1,0 +1,86 @@
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+.container {
+  margin: 10px;
+  width: 300;
+  display: flex;
+  flex-direction: column;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  margin: 0px;
+  padding-bottom: 5px;
+  height: 30px;
+}
+
+.status-message {
+  margin: 0px;
+}
+
+.btns {
+  color: #314d3e;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.btn {
+  border-width: 0px;
+  border-radius: 3px;
+  color: #f0eded;
+  display: inline-block;
+  width: 65px;
+  padding: 5px 3px;
+  font-weight: 400;
+}
+
+.btn:active {
+  color: #242625;
+}
+
+.btn.btn-prev,
+.btn.btn-next {
+  background-color: #0d6efd;
+}
+
+.btn.btn-prev:hover,
+.btn.btn-next:hover {
+  background-color: #0952c0;
+}
+
+.btn.btn-prev:active,
+.btn.btn-next:active {
+  background-color: #3d85f0;
+}
+
+.btn.btn-save {
+  background-color: #12a54f;
+}
+
+.btn.btn-save:hover {
+  background-color: #077a37;
+}
+
+.btn.btn-save:active {
+  background-color: #28cd6d;
+  ;
+}
+
+
+.btn.btn-delete {
+  background-color: #e32218;
+}
+
+.btn.btn-delete:hover {
+  background-color: #cc1a10;
+}
+
+.btn.btn-delete:active {
+  background-color: #f51a0e;
+}
