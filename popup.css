@@ -1,6 +1,7 @@
 body {
   margin: 0px;
   padding: 0px;
+  height: fit-content;
 }
 
 .container {
@@ -20,6 +21,11 @@ body {
 
 .status-message {
   margin: 0px;
+}
+
+.hidden {
+  display: none;
+  height: 0px
 }
 
 .btns {
@@ -42,6 +48,10 @@ body {
 
 .btn:active {
   color: #242625;
+}
+
+.btn-prev:disabled {
+  background-color: #a9b3ae;
 }
 
 .btn.btn-prev,
