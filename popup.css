@@ -4,6 +4,12 @@ body {
   height: fit-content;
 }
 
+p {
+  display: inline=block;
+  margin: 0;
+  padding: 0;
+}
+
 .container {
   margin: 10px;
   width: 300;
@@ -13,19 +19,18 @@ body {
 
 .status {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   margin: 0px;
-  padding-bottom: 5px;
+  padding-bottom: 3px;
   height: 30px;
 }
 
-.status-message {
+.status-message,
+.articles {
+  font-size: 1.2em;
+  font-weight: 600;
   margin: 0px;
-}
-
-.hidden {
-  display: none;
-  height: 0px
 }
 
 .btns {
