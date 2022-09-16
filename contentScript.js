@@ -45,6 +45,11 @@
 
             case "CLEAR":
                 console.log(type, type === "CLEAR");
+                chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+                    data["__google_scholar_search_result"]["articles"] = {};
+                    chrome.storage.sync.set(data);
+                });
+
                 break;
 
             case "NEXT":

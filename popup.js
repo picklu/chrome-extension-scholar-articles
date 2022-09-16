@@ -41,16 +41,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 chrome.storage.onChanged.addListener(() => {
     const domArticles = document.getElementById("articles");
-    chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-        const { currentPageNumber,
-            currentTotalResults,
-            currentTotalPages,
-            currentSearchKey } = data["__google_scholar_search_result"]["searchResult"];
+    if (domArticles) {
+        chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+            const { currentPageNumber,
+                currentTotalResults,
+                currentTotalPages,
+                currentSearchKey } = data["__google_scholar_search_result"]["searchResult"];
 
-        if (currentTotalResults && currentSearchKey) {
-            domArticles.innerText = `[${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
-        } else {
-            domArticles.innerText = "Not Found!"
-        }
-    });
+            if (currentTotalResults && currentSearchKey) {
+                domArticles.innerText = `[${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
+            } else {
+                domArticles.innerText = "Not Found!"
+            }
+        });
+    }
 });
