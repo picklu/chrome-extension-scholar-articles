@@ -95,13 +95,13 @@ p {
 
 
 .btn.btn-clear {
-  background-color: #e32218;
+  background-color: #d3a10b;
 }
 
 .btn.btn-clear:hover {
-  background-color: #cc1a10;
+  background-color: #caba0b;
 }
 
 .btn.btn-clear:active {
-  background-color: #f51a0e;
+  background-color: #f5cb0e;
 }
