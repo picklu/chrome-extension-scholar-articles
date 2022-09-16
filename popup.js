@@ -13,10 +13,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const pageNumber = Number(urlParameters.get("start")) / 10 + 1;
         const queryParam = urlParameters.get("q");
         if (pageNumber && queryParam) {
-            chrome.storage.sync.get([queryParam], (data) => {
-                const currentSearchresults = data[queryParam] || {};
-                const { currentPageNumber, currentTotalResults, currentTotalPages } = currentSearchresults;
-                if (currentTotalResults && pageNumber === currentPageNumber) {
+            chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+                const currentSearchresults = data["__google_scholar_search_result"]["searchResult"];
+                const { currentPageNumber,
+                    currentTotalResults,
+                    currentTotalPages,
+                    currentQueryParam } = currentSearchresults;
+                if (currentTotalResults && queryParam === currentQueryParam) {
                     domArticles.innerText = `[${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
                 } else {
                     domArticles.innerText = "Not Found!"

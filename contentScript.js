@@ -1,4 +1,5 @@
 (() => {
+
     let currentPageNumber;
     let currentQueryParam;
     let currentTotalResults;
@@ -16,8 +17,14 @@
             if (totalResults) {
                 currentTotalResults = totalResults;
                 currentTotalPages = Math.ceil(totalResults / 10);
-                chrome.storage.sync.set({
-                    [currentQueryParam]: { currentPageNumber, currentTotalResults, currentTotalPages }
+                chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+                    data["__google_scholar_search_result"]["searchResult"] = {
+                        currentQueryParam,
+                        currentPageNumber,
+                        currentTotalPages,
+                        currentTotalResults
+                    };
+                    chrome.storage.sync.set(data);
                 });
             }
         }

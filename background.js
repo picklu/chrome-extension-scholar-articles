@@ -1,6 +1,12 @@
+const initialData = {
+  "__google_scholar_search_result": {
+    "searchResult": {},
+    "articles": {}
+  }
+}
+
 chrome.runtime.onInstalled.addListener(() => {
-  const storageKey = "__google_scholar_search_result";
-  // chrome.storage.sync.set({ [storageKey]: {} });
+  chrome.storage.sync.set(initialData);
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
