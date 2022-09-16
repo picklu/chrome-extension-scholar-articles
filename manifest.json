@@ -4,6 +4,7 @@
   "description": "Extract articles from Google Scholar",
   "permissions": [
     "storage",
+    "tabs",
     "activeTab"
   ],
   "host_permissions": [
