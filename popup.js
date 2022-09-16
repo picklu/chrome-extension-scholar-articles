@@ -1,4 +1,4 @@
-import { getActiveTabURL, getQueryParams } from "./utils.js";
+import { getActiveTabURL, getQueryParams, clickHandler } from "./utils.js";
 
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,6 +11,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (activeTab.url.includes("https://scholar.google.com/scholar")) {
 
         domButtons.className = "btns btns-active";
+        for (let domBtn of domButtons.children) {
+            domBtn.addEventListener("click", clickHandler);
+        }
+
         const { pageNumber, searchKey } = getQueryParams(activeTab);
 
         if (pageNumber && searchKey) {

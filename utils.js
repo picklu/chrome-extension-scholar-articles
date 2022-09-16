@@ -16,3 +16,10 @@ export function getQueryParams(activeTab) {
 
     return { pageNumber, searchKey };
 }
+
+export async function clickHandler(e) {
+    const type = e.target.dataset.for.toUpperCase();
+    const tab = await getActiveTabURL();
+    console.log(type, tab.id)
+    // chrome.tabs.sendMessage(tab.tabId, { type })
+}
