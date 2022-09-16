@@ -20,13 +20,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (pageNumber && searchKey) {
             chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
 
-                const { currentPageNumber,
+                const { totalArticlesSaved,
+                    currentPageNumber,
                     currentTotalResults,
                     currentTotalPages,
                     currentSearchKey } = data["__google_scholar_search_result"]["searchResult"];
 
                 if (currentTotalResults && searchKey === currentSearchKey) {
-                    domArticles.innerText = `[${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
+                    domArticles.innerText = `[${totalArticlesSaved}/${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
                 } else {
                     domArticles.innerText = "Not Found!"
                 }
@@ -43,13 +44,14 @@ chrome.storage.onChanged.addListener(() => {
     const domArticles = document.getElementById("articles");
     if (domArticles) {
         chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-            const { currentPageNumber,
+            const { totalArticlesSaved,
+                currentPageNumber,
                 currentTotalResults,
                 currentTotalPages,
                 currentSearchKey } = data["__google_scholar_search_result"]["searchResult"];
 
             if (currentTotalResults && currentSearchKey) {
-                domArticles.innerText = `[${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
+                domArticles.innerText = `[${totalArticlesSaved}/${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
             } else {
                 domArticles.innerText = "Not Found!"
             }

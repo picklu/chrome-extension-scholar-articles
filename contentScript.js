@@ -5,6 +5,7 @@
     let currentTotalResults;
     let currentTotalPages;
     let currentArticles = [];
+    let totalArticlesSaved = 0;
 
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
 
@@ -23,7 +24,8 @@
                             currentSearchKey,
                             currentPageNumber,
                             currentTotalPages,
-                            currentTotalResults
+                            currentTotalResults,
+                            totalArticlesSaved
                         };
                         chrome.storage.sync.set(data);
                     });
