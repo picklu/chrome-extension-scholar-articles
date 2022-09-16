@@ -94,14 +94,14 @@ p {
 }
 
 
-.btn.btn-delete {
+.btn.btn-clear {
   background-color: #e32218;
 }
 
-.btn.btn-delete:hover {
+.btn.btn-clear:hover {
   background-color: #cc1a10;
 }
 
-.btn.btn-delete:active {
+.btn.btn-clear:active {
   background-color: #f51a0e;
 }
