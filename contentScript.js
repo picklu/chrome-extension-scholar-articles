@@ -1,25 +1,25 @@
 (() => {
 
     let currentPageNumber;
-    let currentQueryParam;
+    let currentSearchKey;
     let currentTotalResults;
     let currentTotalPages;
     let currentArticles = [];
 
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
 
-        const { type, pageNumber, queryParam } = obj;
+        const { type, pageNumber, searchKey } = obj;
 
         if (type === "NEW") {
             currentPageNumber = pageNumber;
-            currentQueryParam = queryParam;
+            currentSearchKey = searchKey;
             totalResults = getSearchResultStat();
             if (totalResults) {
                 currentTotalResults = totalResults;
                 currentTotalPages = Math.ceil(totalResults / 10);
                 chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
                     data["__google_scholar_search_result"]["searchResult"] = {
-                        currentQueryParam,
+                        currentSearchKey,
                         currentPageNumber,
                         currentTotalPages,
                         currentTotalResults

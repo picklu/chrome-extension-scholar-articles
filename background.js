@@ -15,12 +15,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     const urlParameters = new URLSearchParams(queryParameters);
 
     const pageNumber = Number(urlParameters.get("start")) / 10 + 1;
-    const queryParam = urlParameters.get("q");
+    const searchKey = urlParameters.get("q");
 
     chrome.tabs.sendMessage(tabId, {
       type: "NEW",
-      pageNumber: pageNumber,
-      queryParam: queryParam
+      pageNumber,
+      searchKey
     });
   }
 });

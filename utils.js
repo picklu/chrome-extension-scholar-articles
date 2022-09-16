@@ -12,7 +12,7 @@ export function getQueryParams(activeTab) {
     const queryParameters = activeTab.url.split("?")[1];
     const urlParameters = new URLSearchParams(queryParameters);
     const pageNumber = Number(urlParameters.get("start")) / 10 + 1;
-    const queryParam = urlParameters.get("q");
+    const searchKey = urlParameters.get("q");
 
-    return { pageNumber, queryParam };
+    return { pageNumber, searchKey };
 }

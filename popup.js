@@ -11,17 +11,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (activeTab.url.includes("https://scholar.google.com/scholar")) {
 
         domButtons.className = "btns btns-active";
-        const { pageNumber, queryParam } = getQueryParams(activeTab);
+        const { pageNumber, searchKey } = getQueryParams(activeTab);
 
-        if (pageNumber && queryParam) {
+        if (pageNumber && searchKey) {
             chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
 
                 const { currentPageNumber,
                     currentTotalResults,
                     currentTotalPages,
-                    currentQueryParam } = data["__google_scholar_search_result"]["searchResult"];
+                    currentSearchKey } = data["__google_scholar_search_result"]["searchResult"];
 
-                if (currentTotalResults && queryParam === currentQueryParam) {
+                if (currentTotalResults && searchKey === currentSearchKey) {
                     domArticles.innerText = `[${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
                 } else {
                     domArticles.innerText = "Not Found!"
