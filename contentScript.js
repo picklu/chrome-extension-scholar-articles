@@ -10,23 +10,43 @@
 
         const { type, pageNumber, searchKey } = obj;
 
-        if (type === "NEW") {
-            currentPageNumber = pageNumber;
-            currentSearchKey = searchKey;
-            totalResults = getSearchResultStat();
-            if (totalResults) {
-                currentTotalResults = totalResults;
-                currentTotalPages = Math.ceil(totalResults / 10);
-                chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-                    data["__google_scholar_search_result"]["searchResult"] = {
-                        currentSearchKey,
-                        currentPageNumber,
-                        currentTotalPages,
-                        currentTotalResults
-                    };
-                    chrome.storage.sync.set(data);
-                });
-            }
+        switch (type) {
+            case "NEW":
+                currentPageNumber = pageNumber;
+                currentSearchKey = searchKey;
+                totalResults = getSearchResultStat();
+                if (totalResults) {
+                    currentTotalResults = totalResults;
+                    currentTotalPages = Math.ceil(totalResults / 10);
+                    chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+                        data["__google_scholar_search_result"]["searchResult"] = {
+                            currentSearchKey,
+                            currentPageNumber,
+                            currentTotalPages,
+                            currentTotalResults
+                        };
+                        chrome.storage.sync.set(data);
+                    });
+                }
+
+                break;
+
+            case "PREVIOUS":
+                console.log(type, type === "PREVIOUS");
+                break;
+
+            case "SAVE":
+                console.log(type, type === "SAVE");
+                break;
+
+            case "CLEAR":
+                console.log(type, type === "CLEAR");
+                break;
+
+            case "NEXT":
+                console.log(type, type === "NEXT");
+                break;
+
         }
     });
 

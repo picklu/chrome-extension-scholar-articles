@@ -20,6 +20,5 @@ export function getQueryParams(activeTab) {
 export async function clickHandler(e) {
     const type = e.target.dataset.for.toUpperCase();
     const tab = await getActiveTabURL();
-    console.log(type, tab.id)
-    // chrome.tabs.sendMessage(tab.tabId, { type })
+    chrome.tabs.sendMessage(tab.id, { type });
 }
