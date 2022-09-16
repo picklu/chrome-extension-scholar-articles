@@ -33,6 +33,10 @@
 
             case "PREVIOUS":
                 console.log(type, type === "PREVIOUS");
+                if (currentPageNumber > 1) {
+                    const previous_btn = document.querySelector(".gs_ico_nav_previous");
+                    previous_btn.click();
+                }
                 break;
 
             case "SAVE":
@@ -45,8 +49,14 @@
 
             case "NEXT":
                 console.log(type, type === "NEXT");
+                if (currentPageNumber < currentTotalPages) {
+                    const next_btn = document.querySelector(".gs_ico_nav_next");
+                    next_btn.click();
+                }
                 break;
 
+            default:
+                console.log("What type of message is", type, "?");
         }
     });
 
