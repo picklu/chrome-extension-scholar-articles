@@ -1,7 +1,8 @@
 (() => {
     let currentPageNumber;
     let currentQueryParam;
-    let totalResults;
+    let currentTotalResults;
+    let currentTotalPages;
     let currentArticles = [];
 
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
@@ -12,9 +13,13 @@
             currentPageNumber = pageNumber;
             currentQueryParam = queryParam;
             totalResults = getSearchResultStat();
-            chrome.storage.sync.set({
-                [currentQueryParam]: JSON.stringify({ totalResults })
-            });
+            if (totalResults) {
+                currentTotalResults = totalResults;
+                currentTotalPages = Math.ceil(totalResults / 10);
+                chrome.storage.sync.set({
+                    [currentQueryParam]: { currentPageNumber, currentTotalResults, currentTotalPages }
+                });
+            }
         }
     });
 

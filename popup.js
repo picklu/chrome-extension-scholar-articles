@@ -14,13 +14,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         const queryParam = urlParameters.get("q");
         if (pageNumber && queryParam) {
             chrome.storage.sync.get([queryParam], (data) => {
-                const currentSearchresults = data[queryParam] ? JSON.parse(data[queryParam]) : {};
-                const { totalResults } = currentSearchresults;
-                if (totalResults) {
-                    const totalPages = Math.floor(totalResults / 10);
-                    domArticles.innerText = `Page ${pageNumber} of ${totalPages}`
+                const currentSearchresults = data[queryParam] || {};
+                const { currentPageNumber, currentTotalResults, currentTotalPages } = currentSearchresults;
+                if (currentTotalResults && pageNumber === currentPageNumber) {
+                    domArticles.innerText = `[${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
                 } else {
-                    domArticles.innerText = `Page ${pageNumber}`
+                    domArticles.innerText = "Not Found!"
                 }
             });
         }
