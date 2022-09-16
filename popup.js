@@ -36,4 +36,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         domButtons.className = "btns btns-hidden";
         domStatus.innerHTML = '<p class="status-message">This is not Google Scholar page for articles!</p>';
     }
-})
+});
+
+
+chrome.storage.onChanged.addListener(() => {
+    const domArticles = document.getElementById("articles");
+    chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+        const { currentPageNumber,
+            currentTotalResults,
+            currentTotalPages,
+            currentSearchKey } = data["__google_scholar_search_result"]["searchResult"];
+
+        if (currentTotalResults && currentSearchKey) {
+            domArticles.innerText = `[${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
+        } else {
+            domArticles.innerText = "Not Found!"
+        }
+    });
+});
