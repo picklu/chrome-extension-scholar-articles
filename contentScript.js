@@ -24,12 +24,13 @@
                             currentTotalPages = Math.ceil(totalResults / 10);
                             currentArticles = getArticles();
                             currentPageNumber = pageNumber;
-                            currentSearchKey = searchKey;
-                            // articles[searchKey + "-" + pageNumber] = currentArticles;
-                            // totalArticlesSaved = calcTotalArticlesSaved(articles);
-
+                            currentSearchKey = storedData["searchResult"]["currentSearchKey"];
                             totalArticlesSaved = storedData["searchResult"]["totalArticlesSaved"] || totalArticlesSaved;
-                            if (searchKey != currentSearchKey) totalArticlesSaved = 0;
+
+                            if (searchKey != currentSearchKey) {
+                                currentSearchKey = searchKey;
+                                totalArticlesSaved = 0;
+                            }
 
                             storedData["searchResult"] = {
                                 currentSearchKey,
@@ -59,6 +60,7 @@
                     const searchParams = data["__google_scholar_search_result"]["searchResult"];
                     searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
                     chrome.storage.sync.set(data);
+                    saveArticlesAsJson();
                 });
                 break;
 
@@ -81,6 +83,12 @@
 
             default:
                 console.log("What type of message is", type, "?");
+        }
+    });
+
+    chrome.storage.onChanged.addListener(() => {
+        if (currentArticles.length > 0) {
+            saveArticlesAsJson();
         }
     });
 
@@ -119,24 +127,23 @@
     }
 
 
-    const calcTotalArticlesSaved = (articles) => {
-        let total = 0;
-        Object.keys(articles).forEach(aa => {
-            total = total + articles[aa].length;
-        });
-        return total;
-    }
+    // const calcTotalArticlesSaved = (articles) => {
+    //     let total = 0;
+    //     Object.keys(articles).forEach(aa => {
+    //         total = total + articles[aa].length;
+    //     });
+    //     return total;
+    // }
 
-
-    const saveArticlesAsJson = (fileName, fileContent) => {
-        const bl = new Blob(fileContent, { type: "text/json" });
-        const domAnchor = document.createElement("a");
-        domAnchor.href = URL.createObjectURL(bl);
-        domAnchor.download = fileName + ".json";
-        domAnchor.hidden = true;
-        document.body.appendChild(a);
-        domAnchor.innerHTML = "Download data as a json file";
-        domAnchor.click();
-        domAnchor.remove();
+    const saveArticlesAsJson = () => {
+        const fileName = `${currentSearchKey}-$(currentPageNumber}.json`;
+        const dataObj = { [exportName]: currentArticles }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj));
+        const downloadNode = document.createElement("a");
+        downloadNode.setAttribute("href", dataStr);
+        downloadNode.setAttribute("download", fileName);
+        document.body.appendChild(downloadNode);
+        downloadNode.click();
+        downloadNode.remove();
     }
 })();
