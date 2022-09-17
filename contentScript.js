@@ -19,7 +19,7 @@
 
                     chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
                         const storedData = data["__google_scholar_search_result"];
-                        if (pageNumber !== currentPageNumber || searchKey !== currentSearchKey) {
+                        if (pageNumber !== currentPageNumber) {
                             currentTotalResults = totalResults;
                             currentTotalPages = Math.ceil(totalResults / 10);
                             currentArticles = getArticles();
@@ -29,6 +29,7 @@
                             // totalArticlesSaved = calcTotalArticlesSaved(articles);
 
                             totalArticlesSaved = storedData["searchResult"]["totalArticlesSaved"] || totalArticlesSaved;
+                            if (searchKey != currentSearchKey) totalArticlesSaved = 0;
 
                             storedData["searchResult"] = {
                                 currentSearchKey,
