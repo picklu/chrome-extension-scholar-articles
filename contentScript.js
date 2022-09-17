@@ -135,14 +135,16 @@
     // }
 
     const saveArticlesAsJson = () => {
-        const fileName = `${currentSearchKey}-${currentPageNumber}`;
-        const dataObj = { [fileName]: currentArticles }
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj));
-        const downloadNode = document.createElement("a");
-        downloadNode.setAttribute("href", dataStr);
-        downloadNode.setAttribute("download", fileName + ".json");
-        document.body.appendChild(downloadNode);
-        downloadNode.click();
-        downloadNode.remove();
+        if (currentSearchKey && currentPageNumber) {
+            const fileName = `${currentSearchKey}-${currentPageNumber}`;
+            const dataObj = { [fileName]: currentArticles }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj));
+            const downloadNode = document.createElement("a");
+            downloadNode.setAttribute("href", dataStr);
+            downloadNode.setAttribute("download", fileName + ".json");
+            document.body.appendChild(downloadNode);
+            downloadNode.click();
+            downloadNode.remove();
+        }
     }
 })();
