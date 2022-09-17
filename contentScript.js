@@ -21,7 +21,7 @@
                         const storedData = data["__google_scholar_search_result"];
                         if (pageNumber !== currentPageNumber) {
                             currentTotalResults = totalResults;
-                            currentTotalPages = Math.ceil(totalResults / 10);
+                            currentTotalPages = Math.floor(totalResults / 10);
                             currentArticles = getArticles();
                             currentPageNumber = pageNumber;
                             currentSearchKey = storedData["searchResult"]["currentSearchKey"];
