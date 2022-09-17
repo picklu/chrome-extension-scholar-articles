@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 chrome.storage.onChanged.addListener(() => {
     const domArticles = document.getElementById("articles");
+    const domButtons = document.getElementById("btns");
     if (domArticles) {
         chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
             const { totalArticlesSaved,
@@ -53,7 +54,7 @@ chrome.storage.onChanged.addListener(() => {
             if (currentTotalResults && currentSearchKey) {
                 domArticles.innerText = `[${totalArticlesSaved}/${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
             } else {
-                domArticles.innerText = "Not Found!"
+                domArticles.innerText = "Not Found!";
             }
         });
     }

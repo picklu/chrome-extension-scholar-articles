@@ -104,7 +104,7 @@
                     domArticle.querySelector("h3>a[href]").href : "#";
                 article["abstract"] = domArticle.querySelector("div.gs_rs") ?
                     domArticle.querySelector("div.gs_rs").innerText : "Not found";
-                // console.log(article);
+                if (article["link"] === "#") continue
                 articles.push(article);
             }
         }
