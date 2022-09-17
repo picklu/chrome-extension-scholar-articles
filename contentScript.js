@@ -55,7 +55,7 @@
                 break;
 
             case "SAVE":
-                console.log(type, type === "SAVE");
+                // console.log(type, type === "SAVE");
                 chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
                     const searchParams = data["__google_scholar_search_result"]["searchResult"];
                     searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
