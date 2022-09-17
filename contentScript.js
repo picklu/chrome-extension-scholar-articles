@@ -25,9 +25,9 @@
                             currentArticles = getArticles();
                             currentPageNumber = pageNumber;
                             currentSearchKey = storedData["searchResult"]["currentSearchKey"];
-                            totalArticlesSaved = storedData["searchResult"]["totalArticlesSaved"] || totalArticlesSaved;
+                            totalArticlesSaved = storedData["searchResult"]["totalArticlesSaved"] + currentArticles.length;
 
-                            if (searchKey != currentSearchKey) {
+                            if (searchKey !== currentSearchKey) {
                                 currentSearchKey = searchKey;
                                 totalArticlesSaved = 0;
                             }
@@ -86,11 +86,6 @@
         }
     });
 
-    chrome.storage.onChanged.addListener(() => {
-        if (currentArticles.length > 0) {
-            saveArticlesAsJson();
-        }
-    });
 
     const getArticles = () => {
         const articles = [];
@@ -104,7 +99,7 @@
                 article["link"] = domArticle.querySelector("h3>a[href]") ?
                     domArticle.querySelector("h3>a[href]").href : "#";
                 article["abstract"] = domArticle.querySelector("div.gs_rs") ?
-                    domArticle.querySelector("div.gs_rs").innerText : "NOt found";
+                    domArticle.querySelector("div.gs_rs").innerText : "Not found";
                 // console.log(article);
                 articles.push(article);
             }
@@ -136,12 +131,12 @@
     // }
 
     const saveArticlesAsJson = () => {
-        const fileName = `${currentSearchKey}-$(currentPageNumber}.json`;
-        const dataObj = { [exportName]: currentArticles }
+        const fileName = `${currentSearchKey}-${currentPageNumber}`;
+        const dataObj = { [fileName]: currentArticles }
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj));
         const downloadNode = document.createElement("a");
         downloadNode.setAttribute("href", dataStr);
-        downloadNode.setAttribute("download", fileName);
+        downloadNode.setAttribute("download", fileName + ".json");
         document.body.appendChild(downloadNode);
         downloadNode.click();
         downloadNode.remove();
