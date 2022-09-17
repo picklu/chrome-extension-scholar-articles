@@ -25,7 +25,7 @@
                             currentArticles = getArticles();
                             currentPageNumber = pageNumber;
                             currentSearchKey = storedData["searchResult"]["currentSearchKey"];
-                            totalArticlesSaved = storedData["searchResult"]["totalArticlesSaved"] + currentArticles.length;
+                            totalArticlesSaved = storedData["searchResult"]["totalArticlesSaved"];
 
                             if (searchKey !== currentSearchKey) {
                                 currentSearchKey = searchKey;
@@ -61,13 +61,17 @@
                     searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
                     chrome.storage.sync.set(data);
                     saveArticlesAsJson();
+                    if (currentPageNumber < currentTotalPages) {
+                        const next_btn = document.querySelector(".gs_ico_nav_next");
+                        if (next_btn) { next_btn.click() }
+                    }
                 });
                 break;
 
             case "CLEAR":
                 // console.log(type, type === "CLEAR");
                 chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-                    data["__google_scholar_search_result"]["articles"] = {};
+                    data["__google_scholar_search_result"]["searchResult"]["totalArticlesSaved"] = 0;
                     chrome.storage.sync.set(data);
                 });
 
