@@ -7,6 +7,9 @@
     let totalArticlesSaved = 0;
     let currentArticles = [];
     const articlesPerPage = 20;
+    const storageKey = "__google_scholar_search_result";
+    const searchResutlKey = "searchResult";
+    // const articlesKey = "articles";
 
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
 
@@ -44,11 +47,10 @@
         totalResults = getSearchResultStat();
         if (totalResults) {
 
-            chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-                const storedData = data["__google_scholar_search_result"];
-                currentPageNumber = storedData["searchResult"]["currentPageNumber"];
-                currentSearchKey = storedData["searchResult"]["currentSearchKey"];
-                totalArticlesSaved = storedData["searchResult"]["totalArticlesSaved"];
+            chrome.storage.sync.get([storageKey], (data) => {
+                currentPageNumber = data[storageKey][searchResutlKey]["currentPageNumber"];
+                currentSearchKey = data[storageKey][searchResutlKey]["currentSearchKey"];
+                totalArticlesSaved = data[storageKey][searchResutlKey]["totalArticlesSaved"];
 
                 if (searchKey !== currentSearchKey && pageNumber !== currentPageNumber) {
                     // reset stored data 
@@ -70,6 +72,7 @@
 
                 } else {
                     // do nothing;
+                    console.log("Nothing has changed!");
                 }
 
                 // save to storage
@@ -88,8 +91,8 @@
 
     // message = "SAVE"
     const saveArticlesAndGoToNextPage = () => {
-        chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-            const searchParams = data["__google_scholar_search_result"]["searchResult"];
+        chrome.storage.sync.get([storageKey], (data) => {
+            const searchParams = data[storageKey][searchResutlKey];
             searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
             chrome.storage.sync.set(data);
             saveArticlesAsJsonFile();
@@ -102,8 +105,8 @@
 
     // message = "CLEAR"
     const clearStoredData = () => {
-        chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-            data["__google_scholar_search_result"]["searchResult"]["totalArticlesSaved"] = 0;
+        chrome.storage.sync.get([storageKey], (data) => {
+            data[storageKey][searchResutlKey]["totalArticlesSaved"] = 0;
             chrome.storage.sync.set(data);
         });
     }
@@ -165,7 +168,7 @@
     }
 
     const updateStoredData = (data) => {
-        data["__google_scholar_search_result"]["searchResult"] = {
+        data[storageKey][searchResutlKey] = {
             currentSearchKey,
             currentPageNumber,
             currentTotalPages,

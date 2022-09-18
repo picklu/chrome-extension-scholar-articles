@@ -1,5 +1,9 @@
 import { getActiveTabURL, getQueryParams, clickHandler } from "./utils.js";
 
+const storageKey = "__google_scholar_search_result";
+const searchResutlKey = "searchResult";
+// const articlesKey = "articles";
+
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -18,13 +22,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const { pageNumber, searchKey } = getQueryParams(activeTab);
 
         if (pageNumber && searchKey) {
-            chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+            chrome.storage.sync.get([storageKey], (data) => {
 
                 const { totalArticlesSaved,
                     currentPageNumber,
                     currentTotalResults,
                     currentTotalPages,
-                    currentSearchKey } = data["__google_scholar_search_result"]["searchResult"];
+                    currentSearchKey } = data[storageKey][searchResutlKey];
 
                 if (currentTotalResults && searchKey === currentSearchKey) {
                     domArticles.innerText = `[${totalArticlesSaved}/${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
@@ -44,12 +48,12 @@ chrome.storage.onChanged.addListener(() => {
     const domArticles = document.getElementById("articles");
     const domButtons = document.getElementById("btns");
     if (domArticles) {
-        chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+        chrome.storage.sync.get([storageKey], (data) => {
             const { totalArticlesSaved,
                 currentPageNumber,
                 currentTotalResults,
                 currentTotalPages,
-                currentSearchKey } = data["__google_scholar_search_result"]["searchResult"];
+                currentSearchKey } = data[storageKey][searchResutlKey];
 
             if (currentTotalResults && currentSearchKey) {
                 domArticles.innerText = `[${totalArticlesSaved}/${currentTotalResults}] Page ${currentPageNumber} of ${currentTotalPages}`
