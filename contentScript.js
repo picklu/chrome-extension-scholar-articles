@@ -5,8 +5,8 @@
     let currentTotalResults;
     let currentTotalPages;
     let totalArticlesSaved = 0;
-    let articlesPerPage = 20;
     let currentArticles = [];
+    const articlesPerPage = 20;
 
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
 
@@ -15,7 +15,7 @@
         switch (type) {
 
             case "NEW":
-                registerNewData();
+                registerNewData(pageNumber, searchKey);
                 break;
 
             case "PREVIOUS":
@@ -40,38 +40,40 @@
     });
 
     // message = "NEW"
-    const registerNewData = () => {
+    const registerNewData = (pageNumber, searchKey) => {
         totalResults = getSearchResultStat();
         if (totalResults) {
 
             chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-                const storedData = data["__google_scholar_search_result"]["searchResult"];
-                currentPageNumber = storedData["currentPageNumber"];
-                currentSearchKey = storedData["currentSearchKey"];
-                totalArticlesSaved = storedData["totalArticlesSaved"];
+                const storedData = data["__google_scholar_search_result"];
+                currentPageNumber = storedData["searchResult"]["currentPageNumber"];
+                currentSearchKey = storedData["searchResult"]["currentSearchKey"];
+                totalArticlesSaved = storedData["searchResult"]["totalArticlesSaved"];
 
-                // reset stored data if the search key is new
-                if (searchKey !== currentSearchKey) {
+                if (searchKey !== currentSearchKey && pageNumber !== currentPageNumber) {
+                    // reset stored data 
                     currentSearchKey = searchKey;
                     totalArticlesSaved = 0;
-                }
 
-                if (pageNumber !== currentPageNumber) {
-                    currentTotalResults = totalResults;
-                    currentTotalPages = Math.floor(totalResults / articlesPerPage);
+                    // update search params                    
                     currentPageNumber = pageNumber;
                     currentArticles = getArticles();
+                    currentTotalResults = totalResults;
+                    currentTotalPages = Math.floor(totalResults / articlesPerPage);
 
+                } else if (searchKey === currentSearchKey && pageNumber !== currentPageNumber) {
+                    // update search params                    
+                    currentPageNumber = pageNumber;
+                    currentArticles = getArticles();
+                    currentTotalResults = totalResults;
+                    currentTotalPages = Math.floor(totalResults / articlesPerPage);
 
-                    storedData["searchResult"] = {
-                        currentSearchKey,
-                        currentPageNumber,
-                        currentTotalPages,
-                        currentTotalResults,
-                        totalArticlesSaved
-                    };
-                    chrome.storage.sync.set(data);
+                } else {
+                    // do nothing;
                 }
+
+                // save to storage
+                updateStoredData(data);
             });
         }
     }
@@ -160,6 +162,17 @@
         } else {
             return 0;
         }
+    }
+
+    const updateStoredData = (data) => {
+        data["__google_scholar_search_result"]["searchResult"] = {
+            currentSearchKey,
+            currentPageNumber,
+            currentTotalPages,
+            currentTotalResults,
+            totalArticlesSaved
+        };
+        chrome.storage.sync.set(data);
     }
 
     // const calcTotalArticlesSaved = (articles) => {

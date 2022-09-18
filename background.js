@@ -1,3 +1,5 @@
+const articlesPerPage = 20;
+
 const initialData = {
   "__google_scholar_search_result": {
     "searchResult": {},
@@ -14,7 +16,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     const queryParameters = tab.url.split("?")[1];
     const urlParameters = new URLSearchParams(queryParameters);
 
-    const pageNumber = Number(urlParameters.get("start")) / 10 + 1;
+    const pageNumber = Number(urlParameters.get("start")) / articlesPerPage + 1;
     const searchKey = urlParameters.get("q");
 
     chrome.tabs.sendMessage(tabId, {
