@@ -7,6 +7,7 @@
     let totalArticlesSaved = 0;
     let currentArticles = [];
     const articlesPerPage = 20;
+    const endPageNumber = 50;
     const storageKey = "__google_scholar_search_result";
     const searchResutlKey = "searchResult";
     // const articlesKey = "articles";
@@ -96,7 +97,7 @@
             searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
             chrome.storage.sync.set(data);
             saveArticlesAsJsonFile();
-            if (currentPageNumber < currentTotalPages) {
+            if (currentPageNumber < Math.min(currentTotalPages, endPageNumber)) {
                 const next_btn = document.querySelector(".gs_ico_nav_next");
                 if (next_btn) { next_btn.click() }
             }
@@ -113,7 +114,7 @@
 
     // message = "NEXT"
     const gotToNextPage = () => {
-        if (currentPageNumber < currentTotalPages) {
+        if (currentPageNumber < Math.min(currentTotalPages, endPageNumber)) {
             const next_btn = document.querySelector(".gs_ico_nav_next");
             if (next_btn) { next_btn.click() }
         }
