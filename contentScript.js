@@ -6,6 +6,7 @@
     let currentTotalPages;
     let currentArticles = [];
     let totalArticlesSaved = 0;
+    let articlesPerPage = 20;
 
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
 
@@ -21,7 +22,7 @@
                         const storedData = data["__google_scholar_search_result"];
                         if (pageNumber !== currentPageNumber) {
                             currentTotalResults = totalResults;
-                            currentTotalPages = Math.floor(totalResults / 10);
+                            currentTotalPages = Math.floor(totalResults / articlesPerPage);
                             currentArticles = getArticles();
                             currentPageNumber = pageNumber;
                             currentSearchKey = storedData["searchResult"]["currentSearchKey"];
