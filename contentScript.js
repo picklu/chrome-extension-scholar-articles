@@ -4,9 +4,9 @@
     let currentSearchKey;
     let currentTotalResults;
     let currentTotalPages;
-    let currentArticles = [];
     let totalArticlesSaved = 0;
     let articlesPerPage = 20;
+    let currentArticles = [];
 
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
 
@@ -38,50 +38,6 @@
                 console.log("What type of message is", type, "?");
         }
     });
-
-
-    const getArticles = () => {
-        const articles = [];
-        const domArticleContainer = document.getElementById("gs_res_ccl_mid");
-        if (domArticleContainer) {
-            const domArticles = domArticleContainer.children;
-            for (let domArticle of domArticles) {
-                const article = {};
-                article["title"] = domArticle.querySelector("h3>a[href]") ?
-                    domArticle.querySelector("h3>a[href]").innerText : "Not found";
-                article["link"] = domArticle.querySelector("h3>a[href]") ?
-                    domArticle.querySelector("h3>a[href]").href : "#";
-                article["abstract"] = domArticle.querySelector("div.gs_rs") ?
-                    domArticle.querySelector("div.gs_rs").innerText : "Not found";
-                if (article["link"] === "#") continue
-                articles.push(article);
-            }
-        }
-        return articles;
-    }
-
-    const getSearchResultStat = () => {
-        const domTotalResults = document.getElementsByClassName("gs_ab_mdw")[1];
-        if (domTotalResults) {
-            let txtTotalResults = domTotalResults.innerText;
-            while (txtTotalResults.indexOf(",") >= 0) {
-                txtTotalResults = txtTotalResults.replace(",", "");
-            }
-            let matches = txtTotalResults.match(/about\s(\d+)\sresults/i);
-            return Number(matches[1] || 0);
-        } else {
-            return 0;
-        }
-    }
-
-
-    // const calcTotalArticlesSaved = (articles) => {
-    //     let total = 0;
-    //     Object.keys(articles).forEach(aa => {
-    //         total = total + articles[aa].length;
-    //     });
-    //     return total;
-    // }
 
     // message = "NEW"
     const registerNewData = () => {
@@ -120,7 +76,6 @@
         }
     }
 
-
     // message = "PREVIOUS"
     const gotToPreviousPage = () => {
         if (currentPageNumber > 1) {
@@ -128,7 +83,6 @@
             if (previous_btn) { previous_btn.click() }
         }
     }
-
 
     // message = "SAVE"
     const saveArticlesAndGoToNextPage = () => {
@@ -144,7 +98,6 @@
         });
     }
 
-
     // message = "CLEAR"
     const clearStoredData = () => {
         chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
@@ -153,7 +106,6 @@
         });
     }
 
-
     // message = "NEXT"
     const gotToNextPage = () => {
         if (currentPageNumber < currentTotalPages) {
@@ -161,7 +113,6 @@
             if (next_btn) { next_btn.click() }
         }
     }
-
 
     const saveArticlesAsJsonFile = () => {
         if (currentSearchKey && currentPageNumber) {
@@ -176,4 +127,47 @@
             downloadNode.remove();
         }
     }
+
+    const getArticles = () => {
+        const articles = [];
+        const domArticleContainer = document.getElementById("gs_res_ccl_mid");
+        if (domArticleContainer) {
+            const domArticles = domArticleContainer.children;
+            for (let domArticle of domArticles) {
+                const article = {};
+                article["title"] = domArticle.querySelector("h3>a[href]") ?
+                    domArticle.querySelector("h3>a[href]").innerText : "Not found";
+                article["link"] = domArticle.querySelector("h3>a[href]") ?
+                    domArticle.querySelector("h3>a[href]").href : "#";
+                article["abstract"] = domArticle.querySelector("div.gs_rs") ?
+                    domArticle.querySelector("div.gs_rs").innerText : "Not found";
+                if (article["link"] === "#") continue
+                articles.push(article);
+            }
+        }
+        return articles;
+    }
+
+    const getSearchResultStat = () => {
+        const domTotalResults = document.getElementsByClassName("gs_ab_mdw")[1];
+        if (domTotalResults) {
+            let txtTotalResults = domTotalResults.innerText;
+            while (txtTotalResults.indexOf(",") >= 0) {
+                txtTotalResults = txtTotalResults.replace(",", "");
+            }
+            let matches = txtTotalResults.match(/about\s(\d+)\sresults/i);
+            return Number(matches[1] || 0);
+        } else {
+            return 0;
+        }
+    }
+
+    // const calcTotalArticlesSaved = (articles) => {
+    //     let total = 0;
+    //     Object.keys(articles).forEach(aa => {
+    //         total = total + articles[aa].length;
+    //     });
+    //     return total;
+    // }
+
 })();
