@@ -13,77 +13,25 @@
         const { type, pageNumber, searchKey } = obj;
 
         switch (type) {
+
             case "NEW":
-
-                totalResults = getSearchResultStat();
-                if (totalResults) {
-
-                    chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-                        const storedData = data["__google_scholar_search_result"];
-                        if (pageNumber !== currentPageNumber) {
-                            currentTotalResults = totalResults;
-                            currentTotalPages = Math.floor(totalResults / articlesPerPage);
-                            currentArticles = getArticles();
-                            currentPageNumber = pageNumber;
-                            currentSearchKey = storedData["searchResult"]["currentSearchKey"];
-                            totalArticlesSaved = storedData["searchResult"]["totalArticlesSaved"];
-
-                            if (searchKey !== currentSearchKey) {
-                                currentSearchKey = searchKey;
-                                totalArticlesSaved = 0;
-                            }
-
-                            storedData["searchResult"] = {
-                                currentSearchKey,
-                                currentPageNumber,
-                                currentTotalPages,
-                                currentTotalResults,
-                                totalArticlesSaved
-                            };
-                            chrome.storage.sync.set(data);
-                        }
-                    });
-                }
-
+                registerNewData();
                 break;
 
             case "PREVIOUS":
-                // console.log(type, type === "PREVIOUS");
-                if (currentPageNumber > 1) {
-                    const previous_btn = document.querySelector(".gs_ico_nav_previous");
-                    if (previous_btn) { previous_btn.click() }
-                }
+                gotToPreviousPage();
                 break;
 
             case "SAVE":
-                // console.log(type, type === "SAVE");
-                chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-                    const searchParams = data["__google_scholar_search_result"]["searchResult"];
-                    searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
-                    chrome.storage.sync.set(data);
-                    saveArticlesAsJson();
-                    if (currentPageNumber < currentTotalPages) {
-                        const next_btn = document.querySelector(".gs_ico_nav_next");
-                        if (next_btn) { next_btn.click() }
-                    }
-                });
+                saveArticlesAndGoToNextPage();
                 break;
 
             case "CLEAR":
-                // console.log(type, type === "CLEAR");
-                chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
-                    data["__google_scholar_search_result"]["searchResult"]["totalArticlesSaved"] = 0;
-                    chrome.storage.sync.set(data);
-                });
-
+                clearStoredData();
                 break;
 
             case "NEXT":
-                // console.log(type, type === "NEXT");
-                if (currentPageNumber < currentTotalPages) {
-                    const next_btn = document.querySelector(".gs_ico_nav_next");
-                    if (next_btn) { next_btn.click() }
-                }
+                gotToNextPage();
                 break;
 
             default:
@@ -135,7 +83,87 @@
     //     return total;
     // }
 
-    const saveArticlesAsJson = () => {
+    // message = "NEW"
+    const registerNewData = () => {
+        totalResults = getSearchResultStat();
+        if (totalResults) {
+
+            chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+                const storedData = data["__google_scholar_search_result"]["searchResult"];
+                currentPageNumber = storedData["currentPageNumber"];
+                currentSearchKey = storedData["currentSearchKey"];
+                totalArticlesSaved = storedData["totalArticlesSaved"];
+
+                // reset stored data if the search key is new
+                if (searchKey !== currentSearchKey) {
+                    currentSearchKey = searchKey;
+                    totalArticlesSaved = 0;
+                }
+
+                if (pageNumber !== currentPageNumber) {
+                    currentTotalResults = totalResults;
+                    currentTotalPages = Math.floor(totalResults / articlesPerPage);
+                    currentPageNumber = pageNumber;
+                    currentArticles = getArticles();
+
+
+                    storedData["searchResult"] = {
+                        currentSearchKey,
+                        currentPageNumber,
+                        currentTotalPages,
+                        currentTotalResults,
+                        totalArticlesSaved
+                    };
+                    chrome.storage.sync.set(data);
+                }
+            });
+        }
+    }
+
+
+    // message = "PREVIOUS"
+    const gotToPreviousPage = () => {
+        if (currentPageNumber > 1) {
+            const previous_btn = document.querySelector(".gs_ico_nav_previous");
+            if (previous_btn) { previous_btn.click() }
+        }
+    }
+
+
+    // message = "SAVE"
+    const saveArticlesAndGoToNextPage = () => {
+        chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+            const searchParams = data["__google_scholar_search_result"]["searchResult"];
+            searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
+            chrome.storage.sync.set(data);
+            saveArticlesAsJsonFile();
+            if (currentPageNumber < currentTotalPages) {
+                const next_btn = document.querySelector(".gs_ico_nav_next");
+                if (next_btn) { next_btn.click() }
+            }
+        });
+    }
+
+
+    // message = "CLEAR"
+    const clearStoredData = () => {
+        chrome.storage.sync.get(["__google_scholar_search_result"], (data) => {
+            data["__google_scholar_search_result"]["searchResult"]["totalArticlesSaved"] = 0;
+            chrome.storage.sync.set(data);
+        });
+    }
+
+
+    // message = "NEXT"
+    const gotToNextPage = () => {
+        if (currentPageNumber < currentTotalPages) {
+            const next_btn = document.querySelector(".gs_ico_nav_next");
+            if (next_btn) { next_btn.click() }
+        }
+    }
+
+
+    const saveArticlesAsJsonFile = () => {
         if (currentSearchKey && currentPageNumber) {
             const fileName = `${currentSearchKey}-${currentPageNumber}`;
             const dataObj = { [fileName]: currentArticles }
