@@ -46,7 +46,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 chrome.storage.onChanged.addListener(() => {
     const domArticles = document.getElementById("articles");
-    const domButtons = document.getElementById("btns");
     if (domArticles) {
         chrome.storage.sync.get([storageKey], (data) => {
             const { totalArticlesSaved,

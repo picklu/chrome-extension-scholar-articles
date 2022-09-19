@@ -12,7 +12,7 @@ export async function getActiveTabURL() {
 export function getQueryParams(activeTab) {
     const queryParameters = activeTab.url.split("?")[1];
     const urlParameters = new URLSearchParams(queryParameters);
-    const pageNumber = Number(urlParameters.get("start")) / articlesPerPage + 1;
+    const pageNumber = Number(urlParameters.get("start") || 0) / articlesPerPage + 1;
     const searchKey = urlParameters.get("q");
 
     return { pageNumber, searchKey };

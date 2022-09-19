@@ -15,8 +15,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url && tab.url.includes("https://scholar.google.com/scholar")) {
     const queryParameters = tab.url.split("?")[1];
     const urlParameters = new URLSearchParams(queryParameters);
-
-    const pageNumber = Number(urlParameters.get("start")) / articlesPerPage + 1;
+    const pageNumber = Number(urlParameters.get("start") || "0") / articlesPerPage + 1;
     const searchKey = urlParameters.get("q");
 
     chrome.tabs.sendMessage(tabId, {

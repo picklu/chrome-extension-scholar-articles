@@ -157,12 +157,12 @@
     const getSearchResultStat = () => {
         const domTotalResults = document.getElementsByClassName("gs_ab_mdw")[1];
         if (domTotalResults) {
-            let txtTotalResults = domTotalResults.innerText;
+            let txtTotalResults = domTotalResults ? domTotalResults.innerText : "";
             while (txtTotalResults.indexOf(",") >= 0) {
                 txtTotalResults = txtTotalResults.replace(",", "");
             }
             let matches = txtTotalResults.match(/about\s(\d+)\sresults/i);
-            return Number(matches[1] || 0);
+            return matches && matches.length > 0 ? Number(matches[1]) : 0;
         } else {
             return 0;
         }
