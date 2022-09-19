@@ -1,9 +1,10 @@
-const articlesPerPage = 20;
-
+const storageKey = "__google_scholar_search_result";
+const searchResutlKey = "searchResult";
+const articlesKey = "articles";
 const initialData = {
-  "__google_scholar_search_result": {
-    "searchResult": {},
-    "articles": {}
+  [storageKey]: {
+    [searchResutlKey]: {},
+    [articlesKey]: {}
   }
 }
 
