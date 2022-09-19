@@ -1,6 +1,6 @@
 {
   "name": "Scholar Articles",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Extract articles from Google Scholar",
   "permissions": [
     "storage",
@@ -30,8 +30,7 @@
       "48": "assets/ext-icon.png",
       "128": "assets/ext-icon.png"
     },
-    "default_title": "Scholar Articles",
-    "default_popup": "popup.html"
+    "default_title": "Scholar Articles"
   },
   "icons": {
     "16": "assets/ext-icon.png",
