@@ -47,7 +47,6 @@
                     }
                 }
 
-
                 data[storageKey][searchResutlKey] = {
                     currentPageNumber,
                     currentSearchKey,
@@ -72,11 +71,11 @@
         const xDOMGSTop = document.getElementById("gs_res_ccl_top");
         if (xDOMGSTop) {
             const xDOMMainCheckBoxLabel = document.createElement("label");
-            xDOMMainCheckBoxLabel.setAttribute("for", "select-all");
+            xDOMMainCheckBoxLabel.setAttribute("for", "gsx-all");
             xDOMMainCheckBoxLabel.innerText = "Select all articles";
             const xDOMMainCheckBox = document.createElement("input");
             xDOMMainCheckBox.setAttribute("type", "checkbox");
-            xDOMMainCheckBox.setAttribute("id", "select-all");
+            xDOMMainCheckBox.setAttribute("id", "gsx-all");
             xDOMMainCheckBox.style.border = "2px solid #0000fb";
             xDOMMainCheckBox.addEventListener("click", onClickMainCheckBox);
             xDOMMainCheckBoxLabel.append(xDOMMainCheckBox);
@@ -87,6 +86,7 @@
         if (xDOMArticleContainer) {
             for (let xDOMArticle of xDOMArticleContainer.children) {
                 const xDOMCheckBox = document.createElement("input");
+                xDOMCheckBox.setAttribute("class", "gsx-article");
                 xDOMCheckBox.setAttribute("type", "checkbox");
                 xDOMCheckBox.addEventListener("click", onClickCheckBox);
                 xDOMArticle.prepend(xDOMCheckBox);
@@ -102,12 +102,13 @@
         if (xDOMGSTop) {
             const xDOMButton = document.createElement("button");
             xDOMButton.setAttribute = ("type", "button");
+            xDOMButton.setAttribute = ("z-index", 10);
             xDOMButton.innerHTML = "DOWNLOAD";
             xDOMButton.style.width = "15rem";
-            xDOMButton.style.height = "4rem";
+            xDOMButton.style.height = "3rem";
             xDOMButton.style.borderRadius = "50px 0 0 50px";
             xDOMButton.style.border = "1px solid transparent";
-            xDOMButton.style.lineHeight = 4;
+            xDOMButton.style.lineHeight = 3;
             xDOMButton.style.fontSize = "1rem";
             xDOMButton.style.textAlign = "left";
             xDOMButton.style.paddingLeft = "1rem";
@@ -132,8 +133,17 @@
     }
 
 
-    const onClickMainCheckBox = () => {
-        // will be updated
+    const onClickMainCheckBox = (e) => {
+        const xCheckBoxes = document.getElementsByClassName("gsx-article");
+        for (let xCheckBox of xCheckBoxes) {
+            if (e.target.checked) {
+                xCheckBox.checked = true;
+                xCheckBox.parentElement.style.backgroundColor = "rgba(35, 33, 150, 0.2)";
+            } else {
+                xCheckBox.checked = false;
+                xCheckBox.parentElement.style.backgroundColor = "#fff";
+            }
+        }
     }
 
     const onClickCheckBox = (e) => {
@@ -163,15 +173,18 @@
         if (domArticleContainer) {
             const domArticles = domArticleContainer.children;
             for (let domArticle of domArticles) {
-                const article = {};
-                article["title"] = domArticle.querySelector("h3>a[href]") ?
-                    domArticle.querySelector("h3>a[href]").innerText : "Not found";
-                article["link"] = domArticle.querySelector("h3>a[href]") ?
-                    domArticle.querySelector("h3>a[href]").href : "#";
-                article["abstract"] = domArticle.querySelector("div.gs_rs") ?
-                    domArticle.querySelector("div.gs_rs").innerText : "Not found";
-                if (article["link"] === "#") continue
-                articles.push(article);
+                const xCheckBox = domArticle.getElementsByClassName("gsx-article")[0];
+                if (xCheckBox.checked) {
+                    const article = {};
+                    article["title"] = domArticle.querySelector("h3>a[href]") ?
+                        domArticle.querySelector("h3>a[href]").innerText : "Not found";
+                    article["link"] = domArticle.querySelector("h3>a[href]") ?
+                        domArticle.querySelector("h3>a[href]").href : "#";
+                    article["abstract"] = domArticle.querySelector("div.gs_rs") ?
+                        domArticle.querySelector("div.gs_rs").innerText : "Not found";
+                    if (article["link"] === "#") continue
+                    articles.push(article);
+                }
             }
         }
 
@@ -183,9 +196,10 @@
     const downArticles = () => {
         chrome.storage.sync.get([storageKey], (data) => {
             const searchParams = data[storageKey][searchResutlKey];
-            searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
+            totalArticlesSaved = searchParams["totalArticlesSaved"] + currentArticles.length;
+            searchParams["totalArticlesSaved"] = totalArticlesSaved;
             chrome.storage.sync.set(data);
-            const fileName = `${currentSearchKey}_${new Date().getTime()}}`;
+            const fileName = `${currentSearchKey}_${currentArticles.length}_${new Date().getTime()}`;
             const dataObj = { [fileName]: currentArticles }
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj));
             const downloadNode = document.createElement("a");
