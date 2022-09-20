@@ -167,7 +167,13 @@
     }
 
     const onClickDBtn = (e) => {
+        if (addArticlesToQueue()) {
+            downArticles();
+        }
+    }
 
+
+    const addArticlesToQueue = () => {
         const articles = [];
         const domArticleContainer = document.getElementById("gs_res_ccl_mid");
         if (domArticleContainer) {
@@ -189,7 +195,7 @@
         }
 
         currentArticles = [...articles];
-        downArticles();
+        return currentArticles.length;
     }
 
 
