@@ -161,8 +161,8 @@
             while (txtTotalResults.indexOf(",") >= 0) {
                 txtTotalResults = txtTotalResults.replace(",", "");
             }
-            let matches = txtTotalResults.match(/about\s(\d+)\sresults/i);
-            return matches && matches.length > 0 ? Number(matches[1]) : 0;
+            let matches = txtTotalResults.match(/(about\s)?(\d+)\sresults/i);
+            return matches && matches.length > 0 ? Number(matches[2]) : 0;
         } else {
             return 0;
         }
