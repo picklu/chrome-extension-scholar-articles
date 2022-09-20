@@ -169,6 +169,8 @@
     const onClickDBtn = (e) => {
         if (addArticlesToQueue()) {
             downArticles();
+        } else {
+            alert("No articles found to be downloaded!");
         }
     }
 

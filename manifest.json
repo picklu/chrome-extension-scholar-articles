@@ -1,7 +1,7 @@
 {
-  "name": "Scholar Articles",
+  "name": "Get Scholar Articles",
   "version": "0.2.0",
-  "description": "Extract articles from Google Scholar",
+  "description": "Extract articles from Google Scholar in json format",
   "permissions": [
     "storage",
     "tabs",
