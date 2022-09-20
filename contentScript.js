@@ -2,15 +2,11 @@
 
     let currentPageNumber;
     let currentSearchKey;
-    let currentTotalResults;
-    let currentTotalPages;
     let totalArticlesSaved = 0;
     let currentArticles = [];
-    const articlesPerPage = 20;
-    const endPageNumber = 50;
     const storageKey = "__google_scholar_search_result";
     const searchResutlKey = "searchResult";
-    // const articlesKey = "articles";
+
 
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
 
@@ -22,22 +18,6 @@
                 registerNewData(pageNumber, searchKey);
                 break;
 
-            case "PREVIOUS":
-                gotToPreviousPage();
-                break;
-
-            case "SAVE":
-                saveArticlesAndGoToNextPage();
-                break;
-
-            case "CLEAR":
-                clearStoredData();
-                break;
-
-            case "NEXT":
-                gotToNextPage();
-                break;
-
             default:
                 console.log("What type of message is", type, "?");
         }
@@ -47,94 +27,137 @@
     const registerNewData = (pageNumber, searchKey) => {
         totalResults = getSearchResultStat();
         if (totalResults) {
-
             chrome.storage.sync.get([storageKey], (data) => {
                 currentPageNumber = data[storageKey][searchResutlKey]["currentPageNumber"];
                 currentSearchKey = data[storageKey][searchResutlKey]["currentSearchKey"];
                 totalArticlesSaved = data[storageKey][searchResutlKey]["totalArticlesSaved"];
 
-                if (searchKey !== currentSearchKey && pageNumber !== currentPageNumber) {
+                if (searchKey !== currentSearchKey) {
                     // reset stored data 
                     currentSearchKey = searchKey;
                     totalArticlesSaved = 0;
 
-                    // update search params                    
-                    currentPageNumber = pageNumber;
-                    currentArticles = getArticles();
-                    currentTotalResults = totalResults;
-                    currentTotalPages = Math.floor(totalResults / articlesPerPage);
+                    if (pageNumber !== currentPageNumber) {
+                        currentPageNumber = pageNumber;
+                    }
+                }
+                else {
+                    if (pageNumber !== currentPageNumber) {
+                        currentPageNumber = pageNumber;
+                    }
+                }
 
-                } else if (searchKey === currentSearchKey && pageNumber !== currentPageNumber) {
-                    // update search params                    
-                    currentPageNumber = pageNumber;
-                    currentArticles = getArticles();
-                    currentTotalResults = totalResults;
-                    currentTotalPages = Math.floor(totalResults / articlesPerPage);
 
-                } else {
-                    // do nothing;
-                    console.log("Nothing has changed!");
+                data[storageKey][searchResutlKey] = {
+                    currentPageNumber,
+                    currentSearchKey,
+                    totalArticlesSaved
                 }
 
                 // save to storage
                 updateStoredData(data);
             });
+
+            updateDomWithXtendedElement();
         }
     }
 
-    // message = "PREVIOUS"
-    const gotToPreviousPage = () => {
-        if (currentPageNumber > 1) {
-            const previous_btn = document.querySelector(".gs_ico_nav_previous");
-            if (previous_btn) { previous_btn.click() }
-        }
+
+    const updateDomWithXtendedElement = () => {
+        addCheckBoxes();
+        addDownloadButton();
     }
 
-    // message = "SAVE"
-    const saveArticlesAndGoToNextPage = () => {
-        chrome.storage.sync.get([storageKey], (data) => {
-            const searchParams = data[storageKey][searchResutlKey];
-            searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
-            chrome.storage.sync.set(data);
-            saveArticlesAsJsonFile();
-            if (currentPageNumber < Math.min(currentTotalPages, endPageNumber)) {
-                const next_btn = document.querySelector(".gs_ico_nav_next");
-                if (next_btn) { next_btn.click() }
+    const addCheckBoxes = () => {
+        const xDOMGSTop = document.getElementById("gs_res_ccl_top");
+        if (xDOMGSTop) {
+            const xDOMMainCheckBoxLabel = document.createElement("label");
+            xDOMMainCheckBoxLabel.setAttribute("for", "select-all");
+            xDOMMainCheckBoxLabel.innerText = "Select all articles";
+            const xDOMMainCheckBox = document.createElement("input");
+            xDOMMainCheckBox.setAttribute("type", "checkbox");
+            xDOMMainCheckBox.setAttribute("id", "select-all");
+            xDOMMainCheckBox.style.border = "2px solid #0000fb";
+            xDOMMainCheckBox.addEventListener("click", onClickMainCheckBox);
+            xDOMMainCheckBoxLabel.append(xDOMMainCheckBox);
+            xDOMGSTop.prepend(xDOMMainCheckBoxLabel);
+        }
+
+        const xDOMArticleContainer = document.getElementById("gs_res_ccl_mid");
+        if (xDOMArticleContainer) {
+            for (let xDOMArticle of xDOMArticleContainer.children) {
+                const xDOMCheckBox = document.createElement("input");
+                xDOMCheckBox.setAttribute("type", "checkbox");
+                xDOMCheckBox.addEventListener("click", onClickCheckBox);
+                xDOMArticle.prepend(xDOMCheckBox);
             }
-        });
-    }
 
-    // message = "CLEAR"
-    const clearStoredData = () => {
-        chrome.storage.sync.get([storageKey], (data) => {
-            data[storageKey][searchResutlKey]["totalArticlesSaved"] = 0;
-            chrome.storage.sync.set(data);
-        });
-    }
-
-    // message = "NEXT"
-    const gotToNextPage = () => {
-        if (currentPageNumber < Math.min(currentTotalPages, endPageNumber)) {
-            const next_btn = document.querySelector(".gs_ico_nav_next");
-            if (next_btn) { next_btn.click() }
+        } else {
+            console.log("Div with id of 'gs_res_ccl_mid' not found!");
         }
     }
 
-    const saveArticlesAsJsonFile = () => {
-        if (currentSearchKey && currentPageNumber) {
-            const fileName = `${currentSearchKey}-${currentPageNumber}`;
-            const dataObj = { [fileName]: currentArticles }
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj));
-            const downloadNode = document.createElement("a");
-            downloadNode.setAttribute("href", dataStr);
-            downloadNode.setAttribute("download", fileName + ".json");
-            document.body.appendChild(downloadNode);
-            downloadNode.click();
-            downloadNode.remove();
+    const addDownloadButton = () => {
+        const xDOMGSTop = document.getElementById("gs_top");
+        if (xDOMGSTop) {
+            const xDOMButton = document.createElement("button");
+            xDOMButton.setAttribute = ("type", "button");
+            xDOMButton.innerHTML = "DOWNLOAD";
+            xDOMButton.style.width = "15rem";
+            xDOMButton.style.height = "4rem";
+            xDOMButton.style.borderRadius = "50px 0 0 50px";
+            xDOMButton.style.border = "1px solid transparent";
+            xDOMButton.style.lineHeight = 4;
+            xDOMButton.style.fontSize = "1rem";
+            xDOMButton.style.textAlign = "left";
+            xDOMButton.style.paddingLeft = "1rem";
+            xDOMButton.style.color = "#fbfbfb";
+            xDOMButton.style.boxShadow = "2px 2px 2px 0 #999";
+            xDOMButton.style.backgroundColor = "rgba(35,33,179, 0.9)";
+
+            xDOMButton.style.position = "fixed";
+            xDOMButton.style.right = 0;
+            xDOMButton.style.bottom = "50%";
+            xDOMButton.style.marginRight = "-1rem";
+
+            xDOMButton.addEventListener("mouseover", onMouseOverDBtn);
+            xDOMButton.addEventListener("mouseout", onMouseOutDBtn);
+            xDOMButton.addEventListener("mousedown", onMouseDownDBtn);
+            xDOMButton.addEventListener("click", onClickDBtn);
+            xDOMGSTop.append(xDOMButton);
+
+        } else {
+            console.log("Div with id of 'gs_top' not found!");
         }
     }
 
-    const getArticles = () => {
+
+    const onClickMainCheckBox = () => {
+        // will be updated
+    }
+
+    const onClickCheckBox = (e) => {
+        if (e.target.checked) {
+            e.target.parentElement.style.backgroundColor = "rgba(35, 33, 150, 0.2)";
+        } else {
+            e.target.parentElement.style.backgroundColor = "#ffffff";
+        }
+    }
+
+    const onMouseDownDBtn = (e) => {
+        e.target.style.backgroundColor = "rgba(35,33,179, 0.7)";
+    }
+
+    const onMouseOverDBtn = (e) => {
+        e.target.style.backgroundColor = "rgba(35,33,179, 0.8)";
+    }
+
+    const onMouseOutDBtn = (e) => {
+        e.target.style.backgroundColor = "rgba(35,33,179, 0.9)";
+    }
+
+    const onClickDBtn = (e) => {
+
         const articles = [];
         const domArticleContainer = document.getElementById("gs_res_ccl_mid");
         if (domArticleContainer) {
@@ -151,8 +174,29 @@
                 articles.push(article);
             }
         }
-        return articles;
+
+        currentArticles = [...articles];
+        downArticles();
     }
+
+
+    const downArticles = () => {
+        chrome.storage.sync.get([storageKey], (data) => {
+            const searchParams = data[storageKey][searchResutlKey];
+            searchParams["totalArticlesSaved"] = searchParams["totalArticlesSaved"] + currentArticles.length;
+            chrome.storage.sync.set(data);
+            const fileName = `${currentSearchKey}_${new Date().getTime()}}`;
+            const dataObj = { [fileName]: currentArticles }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj));
+            const downloadNode = document.createElement("a");
+            downloadNode.setAttribute("href", dataStr);
+            downloadNode.setAttribute("download", fileName + ".json");
+            document.body.appendChild(downloadNode);
+            downloadNode.click();
+            downloadNode.remove();
+        });
+    }
+
 
     const getSearchResultStat = () => {
         const domTotalResults = document.getElementsByClassName("gs_ab_mdw")[1];
@@ -161,8 +205,8 @@
             while (txtTotalResults.indexOf(",") >= 0) {
                 txtTotalResults = txtTotalResults.replace(",", "");
             }
-            let matches = txtTotalResults.match(/about\s(\d+)\sresults/i);
-            return matches && matches.length > 0 ? Number(matches[1]) : 0;
+            let matches = txtTotalResults.match(/(about\s)?(\d+)\sresults/i);
+            return matches && matches.length > 0 ? Number(matches[2]) : 0;
         } else {
             return 0;
         }
@@ -170,10 +214,8 @@
 
     const updateStoredData = (data) => {
         data[storageKey][searchResutlKey] = {
-            currentSearchKey,
             currentPageNumber,
-            currentTotalPages,
-            currentTotalResults,
+            currentSearchKey,
             totalArticlesSaved
         };
         chrome.storage.sync.set(data);
