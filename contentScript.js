@@ -177,9 +177,6 @@
     }
 
     const onClickCheckBox = (e) => {
-        console.log(e.target.parentElement);
-        console.log(e.target.parentElement.parentElement);
-        console.log(e.target.parentElement.parentElement.parentElement);
         if (e.target.checked) {
             e.target.parentElement.parentElement.parentElement.style.backgroundColor = "rgba(35, 33, 150, 0.2)";
         } else {
