@@ -95,24 +95,31 @@
         if (xDOMGSTop) {
             const xDOMMainCheckBoxLabel = document.createElement("label");
             xDOMMainCheckBoxLabel.setAttribute("for", "gsx-all");
-            xDOMMainCheckBoxLabel.innerText = "Select all articles";
+
             const xDOMMainCheckBox = document.createElement("input");
             xDOMMainCheckBox.setAttribute("type", "checkbox");
             xDOMMainCheckBox.setAttribute("id", "gsx-all");
             xDOMMainCheckBox.style.border = "2px solid #0000fb";
             xDOMMainCheckBox.addEventListener("click", onClickMainCheckBox);
             xDOMMainCheckBoxLabel.append(xDOMMainCheckBox);
+
+            const textNode = document.createTextNode("Select all articles");
+            xDOMMainCheckBoxLabel.appendChild(textNode);
+
             xDOMGSTop.prepend(xDOMMainCheckBoxLabel);
         }
 
-        const xDOMArticleContainer = document.getElementById("gs_res_ccl_mid");
-        if (xDOMArticleContainer) {
-            for (let xDOMArticle of xDOMArticleContainer.children) {
+        const xDOMArticlesContainer = document.getElementById("gs_res_ccl_mid");
+        if (xDOMArticlesContainer) {
+            for (let xDOMArticleContainer of xDOMArticlesContainer.children) {
                 const xDOMCheckBox = document.createElement("input");
                 xDOMCheckBox.setAttribute("class", "gsx-article");
                 xDOMCheckBox.setAttribute("type", "checkbox");
+                xDOMCheckBox.style.display = "inline-block";
                 xDOMCheckBox.addEventListener("click", onClickCheckBox);
-                xDOMArticle.prepend(xDOMCheckBox);
+
+                const xDOMArticle = xDOMArticleContainer.getElementsByClassName("gs_rt")[0];
+                if (xDOMArticle) xDOMArticle.prepend(xDOMCheckBox);
             }
 
         } else {
@@ -161,19 +168,22 @@
         for (let xCheckBox of xCheckBoxes) {
             if (e.target.checked) {
                 xCheckBox.checked = true;
-                xCheckBox.parentElement.style.backgroundColor = "rgba(35, 33, 150, 0.2)";
+                xCheckBox.parentElement.parentElement.parentElement.style.backgroundColor = "rgba(35, 33, 150, 0.2)";
             } else {
                 xCheckBox.checked = false;
-                xCheckBox.parentElement.style.backgroundColor = "#fff";
+                xCheckBox.parentElement.parentElement.parentElement.style.backgroundColor = "#fff";
             }
         }
     }
 
     const onClickCheckBox = (e) => {
+        console.log(e.target.parentElement);
+        console.log(e.target.parentElement.parentElement);
+        console.log(e.target.parentElement.parentElement.parentElement);
         if (e.target.checked) {
-            e.target.parentElement.style.backgroundColor = "rgba(35, 33, 150, 0.2)";
+            e.target.parentElement.parentElement.parentElement.style.backgroundColor = "rgba(35, 33, 150, 0.2)";
         } else {
-            e.target.parentElement.style.backgroundColor = "#ffffff";
+            e.target.parentElement.parentElement.parentElement.style.backgroundColor = "#ffffff";
         }
     }
 
