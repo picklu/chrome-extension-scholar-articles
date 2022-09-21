@@ -1,21 +1,20 @@
 (() => {
 
+    const storageKey = "__google_scholar_search_result";
+    const searchResutlKey = "searchResult";
+    const articlesPerPage = 20;
+
     let currentPageNumber;
     let currentSearchKey;
     let totalArticlesSaved = 0;
     let currentArticles = [];
-    const storageKey = "__google_scholar_search_result";
-    const searchResutlKey = "searchResult";
 
-
-    chrome.runtime.onMessage.addListener((obj, sender, response) => {
-
-        const { type, pageNumber, searchKey } = obj;
+    chrome.runtime.onMessage.addListener(({ type }, sender, response) => {
 
         switch (type) {
 
             case "NEW":
-                registerNewData(pageNumber, searchKey);
+                registerNewData();
                 break;
 
             default:
@@ -24,28 +23,20 @@
     });
 
     // message = "NEW"
-    const registerNewData = (pageNumber, searchKey) => {
+    const registerNewData = () => {
+        const { pageNumber, searchKey } = getQueryParams();
         totalResults = getSearchResultStat();
         if (totalResults) {
             chrome.storage.sync.get([storageKey], (data) => {
-                currentPageNumber = data[storageKey][searchResutlKey]["currentPageNumber"];
                 currentSearchKey = data[storageKey][searchResutlKey]["currentSearchKey"];
                 totalArticlesSaved = data[storageKey][searchResutlKey]["totalArticlesSaved"];
 
-                if (searchKey !== currentSearchKey) {
-                    // reset stored data 
+                if (currentSearchKey !== searchKey) {
                     currentSearchKey = searchKey;
                     totalArticlesSaved = 0;
+                }
 
-                    if (pageNumber !== currentPageNumber) {
-                        currentPageNumber = pageNumber;
-                    }
-                }
-                else {
-                    if (pageNumber !== currentPageNumber) {
-                        currentPageNumber = pageNumber;
-                    }
-                }
+                currentPageNumber = pageNumber;
 
                 data[storageKey][searchResutlKey] = {
                     currentPageNumber,
@@ -58,6 +49,38 @@
             });
 
             updateDomWithXtendedElement();
+        }
+    }
+
+    const getQueryParams = () => {
+        const queryParameters = document.location.href.split("?")[1];
+        const urlParameters = new URLSearchParams(queryParameters);
+
+        let pageNumber = Number(urlParameters.get("start") || "0") / articlesPerPage + 1;
+        let searchKey = urlParameters.get("q");
+
+        pageNumber = pageNumber ? pageNumber : 0;
+
+        if (!searchKey) {
+            const domAnchorTop = document.querySelector("#gs_res_ccl_top>.gs_r>.gs_rt>a");
+            searchKey = domAnchorTop ? domAnchorTop.innerText.substr(0, 30) + " cited by" : "";
+        }
+
+        return { pageNumber, searchKey }
+    }
+
+
+    const getSearchResultStat = () => {
+        const domTotalResults = document.getElementsByClassName("gs_ab_mdw")[1];
+        if (domTotalResults) {
+            let txtTotalResults = domTotalResults ? domTotalResults.innerText : "";
+            while (txtTotalResults.indexOf(",") >= 0) {
+                txtTotalResults = txtTotalResults.replace(",", "");
+            }
+            let matches = txtTotalResults.match(/(about\s)?(\d+)\sresults/i);
+            return matches && matches.length > 0 ? Number(matches[2]) : 0;
+        } else {
+            return 0;
         }
     }
 
@@ -168,7 +191,7 @@
 
     const onClickDBtn = (e) => {
         if (addArticlesToQueue()) {
-            downArticles();
+            downloadArticles();
         } else {
             alert("No articles found to be downloaded!");
         }
@@ -201,11 +224,10 @@
     }
 
 
-    const downArticles = () => {
+    const downloadArticles = () => {
         chrome.storage.sync.get([storageKey], (data) => {
-            const searchParams = data[storageKey][searchResutlKey];
-            totalArticlesSaved = searchParams["totalArticlesSaved"] + currentArticles.length;
-            searchParams["totalArticlesSaved"] = totalArticlesSaved;
+            totalArticlesSaved = data[storageKey][searchResutlKey]["totalArticlesSaved"] + currentArticles.length;
+            data[storageKey][searchResutlKey]["totalArticlesSaved"] = totalArticlesSaved;
             chrome.storage.sync.set(data);
             const fileName = `${currentSearchKey}_${currentArticles.length}_${new Date().getTime()}`;
             const dataObj = { [fileName]: currentArticles }
@@ -219,21 +241,6 @@
         });
     }
 
-
-    const getSearchResultStat = () => {
-        const domTotalResults = document.getElementsByClassName("gs_ab_mdw")[1];
-        if (domTotalResults) {
-            let txtTotalResults = domTotalResults ? domTotalResults.innerText : "";
-            while (txtTotalResults.indexOf(",") >= 0) {
-                txtTotalResults = txtTotalResults.replace(",", "");
-            }
-            let matches = txtTotalResults.match(/(about\s)?(\d+)\sresults/i);
-            return matches && matches.length > 0 ? Number(matches[2]) : 0;
-        } else {
-            return 0;
-        }
-    }
-
     const updateStoredData = (data) => {
         data[storageKey][searchResutlKey] = {
             currentPageNumber,
@@ -242,13 +249,5 @@
         };
         chrome.storage.sync.set(data);
     }
-
-    // const calcTotalArticlesSaved = (articles) => {
-    //     let total = 0;
-    //     Object.keys(articles).forEach(aa => {
-    //         total = total + articles[aa].length;
-    //     });
-    //     return total;
-    // }
 
 })();
