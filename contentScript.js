@@ -211,17 +211,21 @@
         if (domArticleContainer) {
             const domArticles = domArticleContainer.children;
             for (let domArticle of domArticles) {
-                const xCheckBox = domArticle.getElementsByClassName("gsx-article")[0];
-                if (xCheckBox.checked) {
-                    const article = {};
-                    article["title"] = domArticle.querySelector("h3>a[href]") ?
-                        domArticle.querySelector("h3>a[href]").innerText : "Not found";
-                    article["link"] = domArticle.querySelector("h3>a[href]") ?
-                        domArticle.querySelector("h3>a[href]").href : "#";
-                    article["abstract"] = domArticle.querySelector("div.gs_rs") ?
-                        domArticle.querySelector("div.gs_rs").innerText : "Not found";
-                    if (article["link"] === "#") continue
-                    articles.push(article);
+                const xCheckBox = domArticle.getElementsByClassName("gsx-article");
+                if (xCheckBox) {
+                    if (xCheckBox[0] && xCheckBox[0].checked) {
+                        const article = {};
+                        article["title"] = domArticle.querySelector("h3>a[href]") ?
+                            domArticle.querySelector("h3>a[href]").innerText : "Not found";
+                        article["link"] = domArticle.querySelector("h3>a[href]") ?
+                            domArticle.querySelector("h3>a[href]").href : "#";
+                        article["abstract"] = domArticle.querySelector("div.gs_rs") ?
+                            domArticle.querySelector("div.gs_rs").innerText : "Not found";
+                        if (article["link"] === "#") continue
+                        articles.push(article);
+                    }
+                } else {
+                    console.log("Checkbox not found!");
                 }
             }
         }
