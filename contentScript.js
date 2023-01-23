@@ -134,14 +134,13 @@
             xDOMButton.setAttribute = ("type", "button");
             xDOMButton.setAttribute = ("z-index", 10);
             xDOMButton.innerHTML = "DOWNLOAD";
-            xDOMButton.style.width = "15rem";
+            xDOMButton.style.width = "10rem";
             xDOMButton.style.height = "3rem";
             xDOMButton.style.borderRadius = "50px 0 0 50px";
             xDOMButton.style.border = "1px solid transparent";
             xDOMButton.style.lineHeight = 3;
             xDOMButton.style.fontSize = "1rem";
-            xDOMButton.style.textAlign = "left";
-            xDOMButton.style.paddingLeft = "1rem";
+            xDOMButton.style.textAlign = "center";
             xDOMButton.style.color = "#fbfbfb";
             xDOMButton.style.boxShadow = "2px 2px 2px 0 #999";
             xDOMButton.style.backgroundColor = "rgba(35,33,179, 0.9)";
