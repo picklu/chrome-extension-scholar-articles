@@ -119,7 +119,9 @@
                 xDOMCheckBox.addEventListener("click", onClickCheckBox);
 
                 const xDOMArticle = xDOMArticleContainer.getElementsByClassName("gs_rt")[0];
-                if (xDOMArticle) xDOMArticle.prepend(xDOMCheckBox);
+                const xDOMAnchor = xDOMArticle.getElementsByTagName("a")[0];
+                xDOMAnchor.setAttribute("target", "_blank");
+                xDOMArticle.prepend(xDOMCheckBox);
             }
 
         } else {
