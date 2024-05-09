@@ -201,7 +201,7 @@
         if (addArticlesToQueue()) {
             downloadArticles();
         } else {
-            alert("No articles found to be downloaded!");
+            alert("No articles were selected!");
         }
     }
 
