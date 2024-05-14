@@ -1,1 +1,1 @@
-# chrome-extension-scholar-articles
+# Chrome Extension Scholar Articles
